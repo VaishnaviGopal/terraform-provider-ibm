@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/IBM/vpc-go-sdk/vpcclassicv1"
@@ -702,30 +703,63 @@ func classicInstanceCreate(d *schema.ResourceData, meta interface{}, profile, na
 	options := &vpcclassicv1.CreateInstanceOptions{
 		InstancePrototype: instanceproto,
 	}
-	instance, response, err := sess.CreateInstance(options)
-	if err != nil {
-		log.Printf("[DEBUG] Instance err %s\n%s", err, response)
-		return err
-	}
-	d.SetId(*instance.ID)
-
-	log.Printf("[INFO] Instance : %s", *instance.ID)
-	d.Set(isInstanceStatus, instance.Status)
-
-	_, err = isWaitForClassicInstanceAvailable(sess, d.Id(), d.Timeout(schema.TimeoutCreate), d)
-	if err != nil {
-		return err
-	}
-
-	v := os.Getenv("IC_ENV_TAGS")
-	if _, ok := d.GetOk(isInstanceTags); ok || v != "" {
-		oldList, newList := d.GetChange(isInstanceTags)
-		err = UpdateTagsUsingCRN(oldList, newList, meta, *instance.CRN)
+	err1 := resource.Retry(10*time.Minute, func() *resource.RetryError {
+		instance, response, err := sess.CreateInstance(options)
 		if err != nil {
-			log.Printf(
-				"Error on create of resource vpc instance (%s) tags: %s", d.Id(), err)
+			log.Printf("[DEBUG] Instance err %s\n%s", err, response)
+			if response.StatusCode == 400 && strings.Contains(err.Error(), "The security group to attach to is not available") {
+				return resource.RetryableError(err)
+			}
+			return resource.NonRetryableError(err)
 		}
+		d.SetId(*instance.ID)
+
+		log.Printf("[INFO] Instance : %s", *instance.ID)
+		d.Set(isInstanceStatus, instance.Status)
+
+		_, err = isWaitForClassicInstanceAvailable(sess, d.Id(), d.Timeout(schema.TimeoutCreate), d)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
+
+		v := os.Getenv("IC_ENV_TAGS")
+		if _, ok := d.GetOk(isInstanceTags); ok || v != "" {
+			oldList, newList := d.GetChange(isInstanceTags)
+			err = UpdateTagsUsingCRN(oldList, newList, meta, *instance.CRN)
+			if err != nil {
+				log.Printf(
+					"Error on create of resource vpc instance (%s) tags: %s", d.Id(), err)
+			}
+		}
+		return nil
+	})
+	if err1 != nil {
+		return err1
 	}
+	// instance, response, err := sess.CreateInstance(options)
+	// if err != nil {
+	// 	log.Printf("[DEBUG] Instance err %s\n%s", err, response)
+	// 	return err
+	// }
+	// d.SetId(*instance.ID)
+
+	// log.Printf("[INFO] Instance : %s", *instance.ID)
+	// d.Set(isInstanceStatus, instance.Status)
+
+	// _, err = isWaitForClassicInstanceAvailable(sess, d.Id(), d.Timeout(schema.TimeoutCreate), d)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// v := os.Getenv("IC_ENV_TAGS")
+	// if _, ok := d.GetOk(isInstanceTags); ok || v != "" {
+	// 	oldList, newList := d.GetChange(isInstanceTags)
+	// 	err = UpdateTagsUsingCRN(oldList, newList, meta, *instance.CRN)
+	// 	if err != nil {
+	// 		log.Printf(
+	// 			"Error on create of resource vpc instance (%s) tags: %s", d.Id(), err)
+	// 	}
+	// }
 	return nil
 }
 
@@ -908,31 +942,66 @@ func instanceCreate(d *schema.ResourceData, meta interface{}, profile, name, vpc
 	options := &vpcv1.CreateInstanceOptions{
 		InstancePrototype: instanceproto,
 	}
-
-	instance, response, err := sess.CreateInstance(options)
-	if err != nil {
-		log.Printf("[DEBUG] Instance err %s\n%s", err, response)
-		return err
-	}
-	d.SetId(*instance.ID)
-
-	log.Printf("[INFO] Instance : %s", *instance.ID)
-	d.Set(isInstanceStatus, instance.Status)
-
-	_, err = isWaitForInstanceAvailable(sess, d.Id(), d.Timeout(schema.TimeoutCreate), d)
-	if err != nil {
-		return err
-	}
-
-	v := os.Getenv("IC_ENV_TAGS")
-	if _, ok := d.GetOk(isInstanceTags); ok || v != "" {
-		oldList, newList := d.GetChange(isInstanceTags)
-		err = UpdateTagsUsingCRN(oldList, newList, meta, *instance.CRN)
+	err1 := resource.Retry(10*time.Minute, func() *resource.RetryError {
+		instance, response, err := sess.CreateInstance(options)
 		if err != nil {
-			log.Printf(
-				"Error on create of resource vpc instance (%s) tags: %s", d.Id(), err)
+			log.Printf("[DEBUG] Instance err %s\n%s", err, response)
+			if response.StatusCode == 400 && strings.Contains(err.Error(), "The security group to attach to is not available") {
+				return resource.RetryableError(err)
+			}
+			return resource.NonRetryableError(err)
 		}
+		d.SetId(*instance.ID)
+
+		log.Printf("[INFO] Instance : %s", *instance.ID)
+		d.Set(isInstanceStatus, instance.Status)
+
+		_, err = isWaitForInstanceAvailable(sess, d.Id(), d.Timeout(schema.TimeoutCreate), d)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
+
+		v := os.Getenv("IC_ENV_TAGS")
+		if _, ok := d.GetOk(isInstanceTags); ok || v != "" {
+			oldList, newList := d.GetChange(isInstanceTags)
+			err = UpdateTagsUsingCRN(oldList, newList, meta, *instance.CRN)
+			if err != nil {
+				log.Printf(
+					"Error on create of resource vpc instance (%s) tags: %s", d.Id(), err)
+			}
+		}
+		return nil
+	})
+	if err1 != nil {
+		return err1
 	}
+	// instance, response, err := sess.CreateInstance(options)
+	// if err != nil {
+	// 	log.Printf("[DEBUG] Instance err %s\n%s", err, response)
+	// 	return err
+	// 	// if response.StatusCode == 400 && strings.Contains(err.Error(), "The security group to attach to is not available") {
+	// 	// 		return resource.RetryableError(err)
+	// 	// 	}
+	// }
+	// d.SetId(*instance.ID)
+
+	// log.Printf("[INFO] Instance : %s", *instance.ID)
+	// d.Set(isInstanceStatus, instance.Status)
+
+	// _, err = isWaitForInstanceAvailable(sess, d.Id(), d.Timeout(schema.TimeoutCreate), d)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// v := os.Getenv("IC_ENV_TAGS")
+	// if _, ok := d.GetOk(isInstanceTags); ok || v != "" {
+	// 	oldList, newList := d.GetChange(isInstanceTags)
+	// 	err = UpdateTagsUsingCRN(oldList, newList, meta, *instance.CRN)
+	// 	if err != nil {
+	// 		log.Printf(
+	// 			"Error on create of resource vpc instance (%s) tags: %s", d.Id(), err)
+	// 	}
+	// }
 	return nil
 }
 
