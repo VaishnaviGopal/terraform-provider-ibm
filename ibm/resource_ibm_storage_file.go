@@ -1230,7 +1230,7 @@ func getSaaSPerformSpacePrice(productItems []datatypes.Product_Item, size int) (
 		}
 
 		keyname := fmt.Sprintf("%d_%d_GBS", capacityMinimum, capacityMaximum)
-		if *item.KeyName != keyname {
+		if !strings.Contains(*item.KeyName, keyname) {
 			continue
 		}
 
@@ -1291,7 +1291,7 @@ func getSaaSEnduranceSpacePrice(productItems []datatypes.Product_Item, size int,
 
 	for _, item := range productItems {
 
-		if *item.KeyName != keyName {
+		if !strings.Contains(*item.KeyName, keyName) {
 			continue
 		}
 
