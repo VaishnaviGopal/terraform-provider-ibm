@@ -22,7 +22,6 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "dependabot"
-    open-pull-requests-limit: 0
     labels:
       - "dependencies"
       
