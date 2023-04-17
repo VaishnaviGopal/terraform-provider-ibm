@@ -13,8 +13,8 @@ variable "region" {
 variable "ibmcloud_api_key" {
 }
 
-variable "kp_integration_name" {
-}
+# variable "kp_integration_name" {
+# }
 
 variable "app_repo" {
 }

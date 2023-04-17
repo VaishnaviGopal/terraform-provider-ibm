@@ -1,12 +1,13 @@
 variable "resource_group" {
   type        = string
   description = "Resource group within which toolchain will be created"
-  default     = "Default"
+  default     = "cli-testing"
 }
 
 variable "ibmcloud_api_key" {
   type        = string
   description = "IBM Cloud API KEY to fetch cloud resources"
+  default = ""
 }
 
 variable "ibmcloud_api" {
@@ -24,7 +25,7 @@ variable "region" {
 variable "toolchain_name" {
   type        = string
   description = "Name of the Toolchain."
-  default     = "Simple Helm Toolchain"
+  default     = "Simple Toolchain"
 }
 
 variable "toolchain_description" {
@@ -36,13 +37,13 @@ variable "toolchain_description" {
 variable "app_name" {
   type        = string
   description = "Name of the application."
-  default     = "simple-helm-app"
+  default     = "simple-app"
 }
 
 variable "app_image_name" {
   type        = string
   description = "Name of the application image."
-  default     = "simple-helm-app"
+  default     = "simple-app"
 }
 
 variable "cluster_name" {
