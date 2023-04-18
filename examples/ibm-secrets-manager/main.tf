@@ -240,12 +240,6 @@ provider "ibm" {
 #   endpoint_type    = var.endpoint_type
 # }
 
-// Create sm_secrets data source
-data "ibm_sm_secrets" "sm_secrets_instance" {
-  instance_id   = "309bd334-c175-4f40-9f65-0ad23db7295c"
-  region        = "eu-gb"
-  # endpoint_type    = "private"
-}
 
 # // Create sm_imported_certificate_metadata data source
 # data "ibm_sm_imported_certificate_metadata" "sm_imported_certificate_metadata_instance" {
@@ -434,3 +428,10 @@ data "ibm_sm_secrets" "sm_secrets_instance" {
 #   secret_type = var.secrets_manager_secret_secret_type
 #   secret_id   = var.secrets_manager_secret_id
 # }
+
+// Create sm_secrets data source
+data "ibm_sm_secrets" "sm_secrets_instance" {
+  instance_id   = "309bd334-c175-4f40-9f65-0ad23db7295c"
+  region        = "eu-gb"
+  endpoint_type    = "private"
+}
